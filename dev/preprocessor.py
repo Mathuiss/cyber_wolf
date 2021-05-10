@@ -5,7 +5,7 @@ import pandas as pd
 import numpy as np
 
 # Set data directory
-DATA_PATH = "/home/mathuis/Downloads/cyber_wolf/data"
+DATA_PATH = "/home/mathuis/Development/cyber_wolf/data"
 
 # Set feature definition
 FEATUE_DEF = ["path", "header", "body", "length", "a", "b", "c", "d", "e", "f", "g", "h", "i",
@@ -109,8 +109,8 @@ def split_body(line):
     values = []
     parameters = line.split("&")
     for param in parameters:
-        if len(line.split("=")) > 1:
-            values.append(line.split("=")[1])
+        if len(param.split("=")) > 1:
+            values.append(param.split("=")[1])
 
     return values
 
@@ -165,8 +165,6 @@ def preprocess(request):
 
     return x
 
-
-
 def main():
     # Create base data frame
     df = pd.DataFrame(columns=FEATUE_DEF)
@@ -188,7 +186,9 @@ def main():
     # Shuffle random
     df = df.sample(frac=1).reset_index(drop=True)
 
-    # Normalize dataset
+    # We will not normalize the dataset
+    # When normalizing, the entire range of the training dataset is considered
+    # In a practical situation, when normalizing a new request, the ranges will differ from the training dataset
     # df = normalize(df)
 
     print(df)
