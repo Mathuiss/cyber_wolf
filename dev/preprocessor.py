@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
 import os
 import pandas as pd
@@ -6,6 +6,9 @@ import numpy as np
 
 # Set data directory
 DATA_PATH = "/home/mathuis/Development/cyber_wolf/data"
+
+# Set path to ignore file
+IGNORE_FILE = "/home/mathuis/Development/cyber_wolf/data/value_ignore.txt"
 
 # Set feature definition
 FEATUE_DEF = ["path", "header", "body", "length", "a", "b", "c", "d", "e", "f", "g", "h", "i",
@@ -24,6 +27,14 @@ NORM_COLS = ["length", "a", "b", "c", "d", "e", "f", "g", "h", "i",
 
 TEST_RATIO = 0.2
 
+ignore_keys = []
+
+def load_ignorefile():
+    global ignore_keys
+    ignore_keys = read_file_content(IGNORE_FILE)
+
+    for i in range(len(ignore_keys)):
+        ignore_keys[i] = ignore_keys[i].strip().strip("\n").strip("\r").lower()
 
 # Reads a file and returns the lines as an array
 def read_file_content(data_path):
@@ -51,7 +62,6 @@ def get_values(request, i):
 
     # In query
     if i == 0:
-        print(line)
         values = split_query(line)
         df = df.append(histogram(values, "path"), ignore_index=True)
 
@@ -63,7 +73,6 @@ def get_values(request, i):
 
     # In body
     if line != "\n" and "\n" in request[0:i]:
-        print(line)
         values = split_body(line)
         df = df.append(histogram(values, "body"), ignore_index=True)
 
@@ -74,6 +83,8 @@ def get_values(request, i):
 def split_query(line):
     line = line.split(" ")[1]
 
+    print(line)
+
     if "?" not in line:
         return []
 
@@ -83,34 +94,51 @@ def split_query(line):
         return []
 
     if "&" not in querystring:
-        return list(querystring.split("=")[1])
+        sp = querystring.split("=")
+        if sp[0].lower() not in ignore_keys:
+            return [sp[1]]
+        else:
+            return []
 
     values = []
     sections = querystring.split("&")
     for section in sections:
-        values.append(section.split("=")[1])
+        sp = section.split("=")
+        if len(sp) > 1:
+            if sp[0].lower() not in ignore_keys:
+                values.append(sp[1])
 
     return values
 
 
 # Parses header values
 def split_header(line):
-    return list(line.split(": "[1]))
+    sp = line.split(": ")
+    if sp[0].lower() not in ignore_keys:
+        return [sp[1]]
+    else:
+        return []
 
 
 # Parses body values
 def split_body(line):
     if "&" not in line:
-        if len(line.split("=")) > 1:
-            return list(line.split("=")[1])
+        sp = line.split("=")
+        if len(sp) > 1:
+            if sp[0].lower() not in ignore_keys:
+                return [line.split("=")[1]]
+            else:
+                return []
         else:
-            return list("")
+            return []
 
     values = []
     parameters = line.split("&")
     for param in parameters:
-        if len(param.split("=")) > 1:
-            values.append(param.split("=")[1])
+        sp = param.split("=")
+        if len(sp) > 1:
+            if sp[0].lower() not in ignore_keys:
+                values.append(sp[1])
 
     return values
 
@@ -159,13 +187,16 @@ def normalize(df):
 
 
 def preprocess(request):
-    print("Preprocessing request")
+    load_ignorefile()
     x = extract_features(request)
     x = np.asarray(x).astype("float32")
 
     return x
 
 def main():
+    # Set ignore values
+    load_ignorefile()
+
     # Create base data frame
     df = pd.DataFrame(columns=FEATUE_DEF)
 
