@@ -7,8 +7,7 @@ import preprocessor
 
 ADVERSARIAL_PATH = "/home/mathuis/Development/cyber_wolf/data/adversarial"
 MODEL_PATH = "/home/mathuis/Development/cyber_wolf/data"
-MODEL_NAME = "1h-13n-5e-b32-notnorm-model.h5"
-
+MODEL_NAME = "1h-12n-6e-b32-mse_loss-notnorm-model.h5"
 
 def get_values_plaintext(request, i):
     line = request[i].strip()
@@ -44,10 +43,9 @@ for file_name in os.listdir(ADVERSARIAL_PATH):
 
     features = preprocessor.preprocess(request)
 
-    print("###### EVALUATION WHOLE #######")
+    print("#################################################")
     print(file_name)
-    model.evaluate(features, features)
-
+    print("#################################################")
 
     for i in range(len(values)):
         x_row = features[i]
