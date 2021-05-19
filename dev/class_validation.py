@@ -4,13 +4,13 @@ import os
 from tensorflow import keras
 from tensorflow.keras.models import load_model
 from config import read_value
-import preprocessor
+import class_preprocessor
 import numpy as np
 
 ADVERSARIAL_PATH = "/home/mathuis/Development/cyber_wolf/data/adversarial"
 MODEL_PATH = "/home/mathuis/Development/cyber_wolf/data"
-# MODEL_NAME = "1h-12n-6e-b32-mse_loss-notnorm-model.h5"
-MODEL_NAME = "best-model.h5"
+# MODEL_NAME = "1h-4n-e20-b64-class-model.h5"
+MODEL_NAME = "best-class-model.h5"
 
 epsilon = float(read_value("epsilon"))
 
@@ -21,15 +21,15 @@ def get_values_plaintext(request, i):
 
     # In query
     if i == 0:
-        values = preprocessor.split_query(line)
+        values = class_preprocessor.split_query(line)
 
     # In header
     if ": " in line:
-        values = preprocessor.split_header(line)
+        values = class_preprocessor.split_header(line)
 
     # In body
     if line != "\n" and "\n" in request[0:i]:
-        values = preprocessor.split_body(line)
+        values = class_preprocessor.split_body(line)
 
     return values
 
@@ -50,7 +50,7 @@ def evaluate(values, features):
         x_row = features[i]
         val = values[i]
 
-        x = x_row.reshape((-1,98))
+        x = x_row.reshape((-1,48))
 
         print(val)
         e = model.evaluate(x, x)
@@ -78,18 +78,17 @@ def show_results(values, list_mse, mean, std_dev, threshf, threshb):
             print(f"FLAGGED: {values[i]}")
             continue
 
-
 model = load_model(f"{MODEL_PATH}/models/{MODEL_NAME}")
-preprocessor.load_ignorefile()
+class_preprocessor.load_ignorefile()
 
 for file_name in os.listdir(ADVERSARIAL_PATH):
     print("#################################################")
     print(file_name)
     print("#################################################")
 
-    request = preprocessor.read_file_content(f"{ADVERSARIAL_PATH}/{file_name}")
+    request = class_preprocessor.read_file_content(f"{ADVERSARIAL_PATH}/{file_name}")
     values = parse(request)
-    features = preprocessor.preprocess(request)
+    features = class_preprocessor.preprocess(request)
     list_mse = evaluate(values, features)
 
     mean = sum(list_mse) / len(list_mse)

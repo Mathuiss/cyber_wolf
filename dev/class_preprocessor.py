@@ -10,13 +10,16 @@ DATA_PATH = "/home/mathuis/Development/cyber_wolf/data"
 # Set path to ignore file
 IGNORE_FILE = "/home/mathuis/Development/cyber_wolf/data/value_ignore.txt"
 
-# Set feature definition
-FEATUE_DEF = ["path", "header", "body", "length", "a", "b", "c", "d", "e", "f", "g", "h", "i",
-              "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z",
-              "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q",
-              "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "0", "1", "2", "3", "4", "5", "6", "7",
-              "8", "9", "[", "\\", "]", "^", "_", "`", "{", "|", "}", "~", "!", "\"", "#", "$", "%",
-              "&", "'", "(", ")", "*", "+", ",", "-", ".", "/", ":", ";", "<", ">", "=", "?", "@"]
+
+FEATUE_DEF = ["path", "header", "body", "length", "lowercase", "uppercase","0", "1", "2", "3", "4", "5", "6", "7",
+            "8", "9", "[", "\\", "]", "^", "_", "`", "{", "|", "}", "~", "!", "\"", "#", "$", "%",
+            "&", "'", "(", ")", "*", "+", ",", "-", ".", "/", ":", ";", "<", ">", "=", "?", "@"]
+
+LOWERCASE_LETTERS = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q",
+                "r", "s", "t", "u", "v", "w", "x", "y", "z"]
+
+CAPITAL_LETTERS = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q",
+                    "R", "S", "T", "U", "V", "W", "X", "Y", "Z"]
 
 TEST_RATIO = 0.2
 
@@ -153,6 +156,14 @@ def histogram(values, location):
             if char == " ":
                 continue
 
+            if char in LOWERCASE_LETTERS:
+                row["lowercase"] += 1
+                continue
+
+            if char in CAPITAL_LETTERS:
+                row["uppercase"] += 1
+                continue
+
             row[char] += 1
 
         req_df = req_df.append(df, ignore_index=True)
@@ -227,9 +238,9 @@ def main():
     x_test = np.asarray(x_test).astype("float32")
 
     # Save complete dataset to csv
-    df.to_csv(f"{DATA_PATH}/datasets/notnorm_dataset.csv")
-    np.save(f"{DATA_PATH}/datasets/notnorm_x_train", x_train)
-    np.save(f"{DATA_PATH}/datasets/notnorm_x_test", x_test)
+    df.to_csv(f"{DATA_PATH}/datasets/class_dataset.csv")
+    np.save(f"{DATA_PATH}/datasets/class_x_train", x_train)
+    np.save(f"{DATA_PATH}/datasets/class_x_test", x_test)
 
 
 if __name__ == "__main__":
