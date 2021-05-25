@@ -81,7 +81,7 @@ def split_query(line):
     if "?" not in line:
         return []
 
-    querystring = line.split("?")[1]
+    querystring = line.partition("?")[2]
 
     if len(querystring) == 0:
         return []

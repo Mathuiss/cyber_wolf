@@ -81,6 +81,8 @@ def show_results(values, list_mse, mean, std_dev, threshf, threshb):
 model = load_model(f"{MODEL_PATH}/models/{MODEL_NAME}")
 class_preprocessor.load_ignorefile()
 
+total_len = 0
+
 for file_name in os.listdir(ADVERSARIAL_PATH):
     print("#################################################")
     print(file_name)
@@ -91,9 +93,13 @@ for file_name in os.listdir(ADVERSARIAL_PATH):
     features = class_preprocessor.preprocess(request)
     list_mse = evaluate(values, features)
 
+    total_len += len(list_mse)
+
     mean = sum(list_mse) / len(list_mse)
     std_dev = np.std(list_mse)
     threshold_flag = mean + std_dev
     threshold_block = threshold_flag + std_dev
 
     show_results(values, list_mse, mean, std_dev, threshold_flag, threshold_block)
+
+print(f"TOTAL LEN: {total_len}")
