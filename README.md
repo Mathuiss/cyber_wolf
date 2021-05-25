@@ -62,3 +62,8 @@ You should not specify any fields which make your application vulnerable to cybe
 If a value is flagged by Cyber WOLF but not outright blocked, the value will appear in the flags list. This list allows administrators to check if any cyber attacks have been carried out, which were not detected by Cyber WOLF's blocking mechanism.
 
 ### Setting up your production environment
+Now that you have configured Cyber WOLF it is time to enter into production. Copy the ```rel/``` directory to the location from where you want to deploy the firewall.
+Start the fire wall with the command:
+```bash
+./cyberwolf
+```
