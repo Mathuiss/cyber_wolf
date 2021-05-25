@@ -2,13 +2,16 @@
 
 import sys
 import numpy as np
+import config
 from tensorflow import keras
 from tensorflow.keras import layers
 from matplotlib import pyplot
 
-DATA_PATH = "/home/mathuis/Development/cyber_wolf/data"
+dataset_path = config.read_value("dataset_path")
+model_path = config.read_value("model_path")
+model_name = config.read_value("model_name")
 # MODEL_NAME = "1h-4n-e20-b64-class-model.h5"
-MODEL_NAME = "best-class-model.h5"
+
 HL_SIZE = 4
 
 def load_data(path: str):
@@ -50,15 +53,15 @@ def plot(history):
             pyplot.show()
 
 def main(arg):
-    x_train = load_data(f"{DATA_PATH}/datasets/class_x_train.npy")
-    x_test = load_data(f"{DATA_PATH}/datasets/class_x_test.npy")
+    x_train = load_data(f"{dataset_path}/class_x_train.npy")
+    x_test = load_data(f"{dataset_path}/class_x_test.npy")
 
     model = build_model()
     res = train_model(model, x_train, x_test)
     plot(res.history)
 
     if arg == "save":
-        model.save(f"{DATA_PATH}/models/{MODEL_NAME}")
+        model.save(f"{model_path}/{model_name}")
 
 
 if __name__ == "__main__":

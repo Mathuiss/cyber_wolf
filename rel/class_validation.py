@@ -7,10 +7,10 @@ from config import read_value, append_flags
 import class_preprocessor
 import numpy as np
 
-ADVERSARIAL_PATH = "/home/mathuis/Development/cyber_wolf/data/adversarial"
-MODEL_PATH = "/home/mathuis/Development/cyber_wolf/data"
+adversarial_path = read_value("adversarial_path")
+model_path = read_value("model_path")
 # MODEL_NAME = "1h-4n-e20-b64-class-model.h5"
-MODEL_NAME = "best-class-model.h5"
+model_name = read_value("model_name")
 
 epsilon = float(read_value("epsilon"))
 threshd = float(read_value("threshd"))
@@ -115,17 +115,17 @@ def validate(model, values, features):
 
 
 def main():
-    model = load_model(f"{MODEL_PATH}/models/{MODEL_NAME}")
+    model = load_model(f"{model_path}/{model_name}")
     class_preprocessor.load_ignorefile()
 
     total_len = 0
 
-    for file_name in os.listdir(ADVERSARIAL_PATH):
+    for file_name in os.listdir(adversarial_path):
         print("#################################################")
         print(file_name)
         print("#################################################")
 
-        request = class_preprocessor.read_file_content(f"{ADVERSARIAL_PATH}/{file_name}")
+        request = class_preprocessor.read_file_content(f"{adversarial_path}/{file_name}")
         values = parse(request)
         features = class_preprocessor.preprocess(request)
         list_mse = evaluate(model, values, features)

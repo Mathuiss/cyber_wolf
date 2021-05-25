@@ -4,6 +4,7 @@ import socket
 import time
 import class_preprocessor
 import class_validation
+import config
 from tensorflow.keras.models import load_model
 
 # TCP server settings
@@ -17,10 +18,10 @@ APP_PORT = 8080
 
 # Cyberwolf settings
 class_preprocessor.load_ignorefile() # This command can be turned off
-MODEL_PATH = "/home/mathuis/Development/cyber_wolf/data/models"
-MODEL_NAME = "best-class-model.h5"
-DATASET_PATH = "/home/mathuis/Development/cyber_wolf/data/datasets"
-DATASTORE_PATH = "/home/mathuis/Development/cyber_wolf/data/requests"
+model_path = config.read_value("model_path")
+model_name = config.read_value("model_name")
+dataset_path = config.read_value("dataset_path")
+request_path = config.read_value("request_path")
 
 
 class TCPProxy:
@@ -115,7 +116,7 @@ def evaluate(model, msg):
 
 
 def main():
-    model = load_model(f"{MODEL_PATH}/{MODEL_NAME}")
+    model = load_model(f"{model_path}/{model_name}")
     tcp_proxy = TCPProxy()
 
     try:

@@ -3,12 +3,15 @@
 import os
 import pandas as pd
 import numpy as np
+import config
 
 # Set data directory
-DATA_PATH = "/home/mathuis/Development/cyber_wolf/data"
+dataset_path = config.read_value("dataset_path")
+
+request_path = config.read_value("request_path")
 
 # Set path to ignore file
-IGNORE_FILE = "/home/mathuis/Development/cyber_wolf/data/value_ignore.txt"
+ignore_file = config.read_value("ignore_file")
 
 
 FEATUE_DEF = ["path", "header", "body", "length", "lowercase", "uppercase","0", "1", "2", "3", "4", "5", "6", "7",
@@ -27,7 +30,7 @@ ignore_keys = []
 
 def load_ignorefile():
     global ignore_keys
-    ignore_keys = read_file_content(IGNORE_FILE)
+    ignore_keys = read_file_content(ignore_file)
 
     for i in range(len(ignore_keys)):
         ignore_keys[i] = ignore_keys[i].strip().strip("\n").strip("\r").lower()
@@ -171,25 +174,6 @@ def histogram(values, location):
     return req_df
 
 
-# Normalizes the correct values
-# def normalize(df):
-#     # Normalize histogram
-#     # The normalized count is the count in a class divided by the total number of observations.
-#     # In this case the relative counts are normalized to sum to one (or 100 if a percentage scale is used).
-#     # This is the intuitive case where the height of the histogram bar represents the proportion of the data in each class.
-
-#     # Calculate the sum for each column
-#     # Calculate normalized ratio based on sum for each row and col in base dataframe
-#     for col in NORM_COLS:
-#         print(f"Normalizing: {col}")
-#         if df[col].sum() != 0:
-#             df[col] = df.apply(lambda x: x[col] / df[col].sum(), axis=1)
-
-#         print(f"Total: {df[col].sum()}")
-
-#     return df
-
-
 def preprocess(request):
     load_ignorefile()
     x = extract_features(request)
@@ -204,13 +188,13 @@ def main():
     # Create base data frame
     df = pd.DataFrame(columns=FEATUE_DEF)
 
-    files = os.listdir(f"{DATA_PATH}/requests")
+    files = os.listdir(request_path)
 
     print(f"Preprocessing {len(files)} requests")
 
     for file in files:
         # Read request contents
-        file_contents = read_file_content(f"{DATA_PATH}/requests/{file}")
+        file_contents = read_file_content(f"{request_path}/{file}")
 
         # Extract features from contents
         features = extract_features(file_contents)
@@ -238,9 +222,9 @@ def main():
     x_test = np.asarray(x_test).astype("float32")
 
     # Save complete dataset to csv
-    df.to_csv(f"{DATA_PATH}/datasets/class_dataset.csv")
-    np.save(f"{DATA_PATH}/datasets/class_x_train", x_train)
-    np.save(f"{DATA_PATH}/datasets/class_x_test", x_test)
+    df.to_csv(f"{dataset_path}/class_dataset.csv")
+    np.save(f"{dataset_path}/class_x_train", x_train)
+    np.save(f"{dataset_path}/class_x_test", x_test)
 
 
 if __name__ == "__main__":

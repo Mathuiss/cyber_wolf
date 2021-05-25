@@ -14,7 +14,7 @@ def read_value(key, path="cyberwolf.config"):
             k = sp[0]
 
             if k == key:
-                return sp[1]
+                return sp[1].rstrip()
 
         raise Exception(f"Key {key} not found in config file.")
 
