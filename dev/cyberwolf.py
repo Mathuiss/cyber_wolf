@@ -2,13 +2,26 @@
 
 import socket
 import time
+import class_preprocessor
+import class_validation
+from tensorflow.keras.models import load_model
 
+# TCP server settings
 HOST = "0.0.0.0"
 PORT = 8000
 MAX_CONNECTIONS = 64
 
+# Remote server settings
 APP_IP = "127.0.0.1"
 APP_PORT = 8080
+
+# Cyberwolf settings
+class_preprocessor.load_ignorefile() # This command can be turned off
+MODEL_PATH = "/home/mathuis/Development/cyber_wolf/data/models"
+MODEL_NAME = "best-class-model.h5"
+DATASET_PATH = "/home/mathuis/Development/cyber_wolf/data/datasets"
+DATASTORE_PATH = "/home/mathuis/Development/cyber_wolf/data/requests"
+
 
 class TCPProxy:
     def __init__(self):
@@ -26,8 +39,8 @@ class TCPProxy:
     def handle_incoming(self):
         # Accept connection
         connection, address = self.soc.accept() # This operation blocks untill a connection is made
-        print("############################################")
-        print(f"Incoming connection from: {address}")
+        print("#################### REQUEST ####################")
+        print(f"Incoming connection from: {address[0]}:{address[1]}")
         self.incoming_con = connection
 
         # Handle connection
@@ -39,7 +52,12 @@ class TCPProxy:
     def handle_response(self, response):
         # Send all bytes back to caller
         self.incoming_con.sendall(bytes(response, "utf-8"))
-        print(f"Returned response to caller")
+        print("Returned response to caller")
+
+    def deny_connection(self):
+        # Deny the connection with peer
+        self.incoming_con.sendall(bytes("CONNECTION DENIED", "utf-8"))
+        print("Sent DENY message to caller")
 
     def handle_proxy(self, msg):
         # Open a connection to the proxy called ps
@@ -89,9 +107,15 @@ class TCPProxy:
         # join all parts to make final string
         return "".join(total_data)
 
+def evaluate(model, msg):
+    msg = msg.splitlines()
+    features = class_preprocessor.preprocess(msg)
+    values = class_validation.parse(msg)
+    return class_validation.validate(model, values, features)
 
 
 def main():
+    model = load_model(f"{MODEL_PATH}/{MODEL_NAME}")
     tcp_proxy = TCPProxy()
 
     try:
@@ -100,16 +124,19 @@ def main():
             # Handle incoming connections
             rec_msg = tcp_proxy.handle_incoming()
 
-            # Proxy message to remote application
-            proxy_response = tcp_proxy.handle_proxy(rec_msg)
+            # If evaluation goed well, respond normally
+            if evaluate(model, rec_msg):
+                # Proxy message to remote application
+                proxy_response = tcp_proxy.handle_proxy(rec_msg)
 
-            # Return response from remote to caller
-            tcp_proxy.handle_response(proxy_response)
+                # Return response from remote to caller
+                tcp_proxy.handle_response(proxy_response)
+            else:
+                tcp_proxy.deny_connection()
 
             # Close the peer connection
             tcp_proxy.incoming_con.close()
-
-            print("############################################")
+            print("#################################################")
     except Exception as ex:
         print(str(ex))
     finally:
