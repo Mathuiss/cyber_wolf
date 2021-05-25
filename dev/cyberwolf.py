@@ -25,17 +25,19 @@ class TCPProxy:
 
     def handle_incoming(self):
         # Accept connection
-        connection, address = self.soc.accept()
+        connection, address = self.soc.accept() # This operation blocks untill a connection is made
+        print("############################################")
         print(f"Incoming connection from: {address}")
         self.incoming_con = connection
 
         # Handle connection
         rec_msg = connection.recv(20480)
-        rec_msg = rec_msg.decode("utf-8")
-        print(rec_msg)
+        rec_msg = str(rec_msg,"utf-8")
+
         return rec_msg
 
     def handle_response(self, response):
+        # Send all bytes back to caller
         self.incoming_con.sendall(bytes(response, "utf-8"))
         print(f"Returned response to caller")
 
@@ -48,7 +50,7 @@ class TCPProxy:
             ps.sendall(bytes(msg, "utf-8"))
             print(f"Proxying message of size: {len(msg)}")
             # Recv response from remote application
-            response = self._recv_timeout(ps)
+            response = self._recv_timeout(ps, timeout=1)
             print(f"Received response from proxy of size: {len(response)}")
             return response
 
@@ -68,7 +70,7 @@ class TCPProxy:
                 break
             
             # If there is no data yet, wait twice the timeout
-            elif time.time()- start > timeout * 2:
+            elif time.time() - start > timeout * 2:
                 break
             
             # Recv bytes
@@ -92,12 +94,25 @@ class TCPProxy:
 def main():
     tcp_proxy = TCPProxy()
 
-    # Infinitly keep accepting connections, handle and close
-    while True:
-        # Handle incoming connections, and read the message
-        rec_msg = tcp_proxy.handle_incoming()
-        proxy_response = tcp_proxy.handle_proxy(rec_msg)
-        tcp_proxy.handle_response(proxy_response)
+    try:
+        # Infinitly keep accepting connections, handle and close
+        while True:
+            # Handle incoming connections
+            rec_msg = tcp_proxy.handle_incoming()
+
+            # Proxy message to remote application
+            proxy_response = tcp_proxy.handle_proxy(rec_msg)
+
+            # Return response from remote to caller
+            tcp_proxy.handle_response(proxy_response)
+
+            # Close the peer connection
+            tcp_proxy.incoming_con.close()
+
+            print("############################################")
+    except Exception as ex:
+        print(str(ex))
+    finally:
         tcp_proxy.close()
 
 
