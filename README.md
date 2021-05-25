@@ -74,6 +74,7 @@ Here is the list of features that are not yet implemented in this release:
 - Automatic data gathering (saving the first n number of HTTP requests to train the model on).
 - Audtomatic model building (automatically building an deploying a model based on the traffic it has saved during the gathering phase).
 - Flagging interface (allowing admins to easily allow or block values that have been flagged for review).
+- Multi-threaded connection handling
 
 This was all the nessecary information in order for you to get started using Cyber WOLF. If you want to know more about the theory behind this software, please continue reading the next chapter.
 
