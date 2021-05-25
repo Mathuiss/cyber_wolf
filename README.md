@@ -67,3 +67,14 @@ Start the fire wall with the command:
 ```bash
 ./cyberwolf
 ```
+One you see a message like ```Listening for incoming connections on 0.0.0.0:8000``` you can start sending HTTP requests to your web application.
+
+## To DO:
+Here is the list of features that are not yet implemented in this release:
+- Automatic data gathering (saving the first n number of HTTP requests to train the model on).
+- Audtomatic model building (automatically building an deploying a model based on the traffic it has saved during the gathering phase).
+- Flagging interface (allowing admins to easily allow or block values that have been flagged for review).
+
+This was all the nessecary information in order for you to get started using Cyber WOLF. If you want to know more about the theory behind this software, please continue reading the next chapter.
+
+## Under the hood of Cyber WOLF
