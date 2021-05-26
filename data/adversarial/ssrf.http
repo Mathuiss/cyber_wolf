@@ -1,0 +1,21 @@
+POST /EditPosition?handler=http://192.168.0.68/admin HTTP/1.1
+Host: localhost:8000
+Connection: keep-alive
+Content-Length: 246
+Cache-Control: max-age=0
+Upgrade-Insecure-Requests: 1
+Origin: http://localhost/admin
+Content-Type: application/x-www-form-urlencoded
+User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.93 Safari/537.36
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9
+Sec-GPC: 1
+Sec-Fetch-Site: same-origin
+Sec-Fetch-Mode: navigate
+Sec-Fetch-User: ?1
+Sec-Fetch-Dest: document
+Referer: http://192.168.0.68/admin
+Accept-Encoding: gzip, deflate, br
+Accept-Language: en-US,en;q=0.9
+Cookie: imisCookie=%7B%22imis.audit.email%22%3A%22%22%2C%22imis.audit.auditor%22%3A%22%22%2C%22imis.audit.manager%22%3A%22%22%2C%22imis.audit.company%22%3A%22%22%2C%22imis.audit.location%22%3A%22%22%7D; .AspNetCore.Antiforgery.WMXWmFI1dGI=CfDJ8OIrtYvy4zBHhhHh0UxuXIBI0kvbX82HFn6i_iRF0nvcFsNnNM7kGhXsN7cDqn7EEpoMlThmfr8BFN1HVxEqkec7PyGwLQV93PZFvxqY6GA3f-mES5YKc5O7t6aU9gw8PjoI1GWMWqWF6VXGtrbt7Rg
+
+ClientId=3&FundTag=SRI&Ticker=D5BK&Amount=1.1686172&Price=28.73&__RequestVerificationToken=CfDJ8OIrtYvy4zBHhhHh0UxuXIBp84m1io11DwqUblVrp8CubOxRzCjHPdrP7TRanFoom4w0I4TA2eH9IfrIjS1UnB8q9o5i8lPomHy8oJxH1b2Qw3qEbmHWLoD3otMfOw-YbkcN_zzSIkGECrk3wSfIpmo

@@ -1,0 +1,6 @@
+Cookie
+__RequestVerificationToken
+User-Agent
+Accept
+Origin
+Referer
