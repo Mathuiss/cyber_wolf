@@ -121,7 +121,7 @@ FEATUE_DEF = ["path", "header", "body", "length", "lowercase", "uppercase", "0",
             "8", "9", "[", "\\", "]", "^", "_", "`", "{", "|", "}", "~", "!", "\"", "#", "$", "%",
             "&", "'", "(", ")", "*", "+", ",", "-", ".", "/", ":", ";", "<", ">", "=", "?", "@"]
 ```
-We will hot-one encode the location in which the value was found. This can be either in the path, header or body of the request. Then we will assign the length of the value to the ```length``` field. In the ```lowercase``` and ```uppercase``` fields we will assign the amount of lower case and upper case alphabetical characters. 
+We will hot-one encode the location in which the value was found. This can be either in the path, header or body of the request. Then we will assign the length of the value to the ```length``` field. In the ```lowercase``` and ```uppercase``` fields we will assign the amount of lower case and upper case alphabetical characters. The same goes for the remaining fields. The operation eventually creates a histogram for each value found in the request. These histograms are then stored to the hard drive as ```x_train.npy``` and ```x_test.npy``` so the machine learning model can learn from them.
 
 ### Model building
 
