@@ -14,7 +14,7 @@ request_path = config.read_value("request_path")
 ignore_file = config.read_value("ignore_file")
 
 
-FEATUE_DEF = ["path", "header", "body", "length", "lowercase", "uppercase","0", "1", "2", "3", "4", "5", "6", "7",
+FEATUE_DEF = ["path", "header", "body", "length", "lowercase", "uppercase", "0", "1", "2", "3", "4", "5", "6", "7",
             "8", "9", "[", "\\", "]", "^", "_", "`", "{", "|", "}", "~", "!", "\"", "#", "$", "%",
             "&", "'", "(", ")", "*", "+", ",", "-", ".", "/", ":", ";", "<", ">", "=", "?", "@"]
 
