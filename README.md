@@ -71,7 +71,7 @@ One you see a message like ```Listening for incoming connections on 0.0.0.0:8000
 
 ## TODO:
 Here is the list of features that are not yet implemented in this release:
-- Automatic data gathering (saving the first n number of HTTP requests to train the model on).
+- Automatic data gathering (saving the first n number of HTTP requests to train the model on).https://github.com/Mathuiss/cyber_wolf/blob/main/rel/class_training.py
 - Audtomatic model building (automatically building an deploying a model based on the traffic it has saved during the gathering phase).
 - Flagging interface (allowing admins to easily allow or block values that have been flagged for review).
 - Multi-threaded connection handling
@@ -121,9 +121,28 @@ FEATUE_DEF = ["path", "header", "body", "length", "lowercase", "uppercase", "0",
             "8", "9", "[", "\\", "]", "^", "_", "`", "{", "|", "}", "~", "!", "\"", "#", "$", "%",
             "&", "'", "(", ")", "*", "+", ",", "-", ".", "/", ":", ";", "<", ">", "=", "?", "@"]
 ```
-We will hot-one encode the location in which the value was found. This can be either in the path, header or body of the request. Then we will assign the length of the value to the ```length``` field. In the ```lowercase``` and ```uppercase``` fields we will assign the amount of lower case and upper case alphabetical characters. 
+We will hot-one encode the location in which the value was found. This can be either in the path, header or body of the request. Then we will assign the length of the value to the ```length``` field. In the ```lowercase``` and ```uppercase``` fields we will assign the amount of lower case and upper case alphabetical characters. The same goes for the remaining fields. The operation eventually creates a histogram for each value found in the request. These histograms are then stored to the hard drive as ```x_train.npy``` and ```x_test.npy``` so the machine learning model can learn from them.
 
 ### Model building
+The neural network's architecture as discussed above is called an auto-encoder. This is because the network first encodes the original data into a lower dimension representation, before it decodes this lower representation into a close copy of the original. During training the error between the original and the decoded representation is used to adjust the neural weights acoordingly. The implementation of this process is found in the [training script](https://github.com/Mathuiss/cyber_wolf/blob/main/rel/class_training.py).
+
+The neural network is relatively simple. The input layer consists of 48 neurons, representing the 48 fields contained by each histogram. The hidden layer consists of 4 neurons, which contain the latent space representation after compression. The output layer is the same size as the input layer and has 48 neurons. All layers are activated using the Rectified Linear Unit (ReLU) function.
+```python
+input_layer = layers.Input(shape=(48,))
+encoded = layers.Dense(4, activation="relu")(input_layer)
+decoded = layers.Dense(48, activation="relu")(encoded)
+
+model = keras.Model(input_layer, decoded)
+```
+After the model is defined we must compile the model before we can start training. During this process we use the ```adam``` optimizer and use the Mean Squared Error (MSE) as our loss function. Other metrics we track are the Mean Squared Logarithmic Error (MSLE), Mean Absolute Error (MAE), Mean Absolute Percentage Error (MAPE) and the Cosine Similarity.
+```python
+model.compile(optimizer="adam", loss="mse", metrics=["mse", "msle", "mae", "mape", "cosine_similarity"])
+```
+
+Now it's time to train the model. We train the model based on the result of the input ```x_train``` and measure the loss based on the difference between the result and the original input ```x_train```. For our validation set we do the same thing but with the ```x_test``` data set. We train the entire data set 20 times, hence ```epochs=20``` and use a 64 batch size.
+```python
+model.fit(x_train, x_train, epochs=20, batch_size=64, validation_data=(x_test, x_test))
+```
 
 
 ### Detection algorithm
