@@ -113,7 +113,6 @@ def validate(model, values, features):
     return True
 
 
-
 def main():
     model = load_model(f"{MODEL_PATH}/models/{MODEL_NAME}")
     class_preprocessor.load_ignorefile()

@@ -125,7 +125,7 @@ def main():
             # Handle incoming connections
             rec_msg = tcp_proxy.handle_incoming()
 
-            # If evaluation goed well, respond normally
+            # If evaluation goes well, respond normally
             if evaluate(model, rec_msg):
                 # Proxy message to remote application
                 proxy_response = tcp_proxy.handle_proxy(rec_msg)

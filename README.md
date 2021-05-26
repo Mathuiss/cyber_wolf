@@ -143,11 +143,73 @@ Now it's time to train the model. We train the model based on the result of the 
 ```python
 model.fit(x_train, x_train, epochs=20, batch_size=64, validation_data=(x_test, x_test))
 ```
+
 After training the MSE should look something like this:
+
 ![MSE training graph](https://raw.githubusercontent.com/Mathuiss/cyber_wolf/main/data/img/MSE.png)
 
 The cosine simislarity should look something like this:
+
 ![Cosine Similarity training graph](https://raw.githubusercontent.com/Mathuiss/cyber_wolf/main/data/img/CosineSimilarity.png)
 
 
 ### Detection algorithm
+Now that the model has been built we till take a look at the implementation in the [firewall](https://github.com/Mathuiss/cyber_wolf/blob/main/rel/cyberwolf.py). Firstly the model is loaded into memory using the ```load_model()``` function. When a connection is made and a request is sent by a client, this request will first be parsed by the preprocessor. This generates the features which our model can use. With the ```parse()``` function we can get the actual values from the request. Using the ```validate()``` function we can see which values are benign and which values are an anomaly.
+```python
+features = class_preprocessor.preprocess(msg)
+values = class_validation.parse(msg)
+class_validation.validate(model, values, features)
+```
+
+Taking a closer look at the validate function we can see that all values and features are first evaluated by our model. We generate a list of MSE's based on the request. Then we calculate the mean and the standard deviation of the MSE's. The flagging threshold is 1 standard deviation above the mean. The blocking threshold is set by multiplying an arbitrary epsilon value by the standard deviation and adding that tot the standard deviation above the mean. The epsilon value can be set by a server administrator and can make the firewall more or less "sensitive". Lastly the detection threshold allows us to determine whether or not any cyber attack is present in the request. It is recommended to use the standard ```threshd=0.1``` value since this gives us the most accurate results. Next we loop through all values and if the MSE exceeds the ```threshb``` we will block the entire request. If the MSE only exceeds the flagging threshold, the value will be saved for manual review.
+```python
+list_mse = evaluate(model, values, features)
+
+# Get the average MSE
+mean = sum(list_mse) / len(list_mse)
+# Get the standard deviation of the list
+std_dev = np.std(list_mse)
+# Get the flag threshold (mean + 1 * std dev)
+threshf = mean + std_dev
+# Get the block threshold (mean + 2 * std dev)
+threshb = threshf + (epsilon * std_dev)
+
+if std_dev <= threshd:
+    return True
+
+flags = []
+
+for i in range(len(values)):
+    if list_mse[i] >= threshb:
+        return False
+
+    if list_mse[i] >= threshf:
+        flags.append(values[i])
+        continue
+
+append_flags(flags)
+
+return True
+```
+
+If a request is dropped the TCPProxy will send the deny message and close the connection
+```python
+self.incoming_con.sendall(bytes("CONNECTION DENIED", "utf-8"))
+tcp_proxy.incoming_con.close()
+```
+
+If a request is allowed the bytes will be sent to the web application and the response will be delivered to the caller.
+```python
+# Handle incoming connections
+rec_msg = tcp_proxy.handle_incoming()
+
+# If evaluation goes well, respond normally
+if evaluate(model, rec_msg):
+    # Proxy message to remote application
+    proxy_response = tcp_proxy.handle_proxy(rec_msg)
+
+    # Return response from remote to caller
+    tcp_proxy.handle_response(proxy_response)
+else:
+    tcp_proxy.deny_connection()
+```
