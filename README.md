@@ -105,6 +105,10 @@ Accept-Language: en-US,en;q=0.9
 
 ClientId=%3CSCRIPT%20TYPE=%22TEXT/JAVASCRIPT%22%3EVAR%20ADR%20=%20%27../EVIL.PHP?CAKEMONSTER=%27%20+%20ESCAPE(DOCUMENT.COOKIE);%3C/SCRIPT%3E&Item=2&amount=20
 ```
-By looking at the above HTTP request a human is easily able to spot the XSS payload in the request body. The goal is to build a machine learning model that is able to detect anomalies in these HTTP requests, and take certain actions based on the certainty of it being a cyber attack.
+By looking at the above HTTP request a human is easily able to spot the XSS payload in the request body. A machine learning model can be trained to specifically detect an XSS, SQLi or any other payload. These types of firewalls already exist and can be downloaded for free on github. Our goal is to build a machine learning model that is able to detect anomalies in HTTP requests, and take certain actions based on the certainty of it being a cyber attack.
+
+As stated above we will rely on the anomaly detection strategy to learn features of benign HTTP requests to a specific web application, so that we can compare these signatures to incoming requests and detect statistical outliers. This way we can simply white-list types of traffic and perform a specific action on divergent requests. The anomaly detection method has a few benefits over the traditional categorical models. Namely that there is no need for a comprehensive data set of cyber attacks from which to learn but also that we can hopefully detect cyber attacks that do not yet exist, due to the white listing of benign traffic.
+
+
 ### Feature extraction
 Feature extraction is done as part of the [preprocessor](https://github.com/Mathuiss/cyber_wolf/blob/main/rel/class_preprocessor.py). 
