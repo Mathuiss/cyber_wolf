@@ -109,6 +109,21 @@ By looking at the above HTTP request a human is easily able to spot the XSS payl
 
 As stated above we will rely on the anomaly detection strategy to learn features of benign HTTP requests to a specific web application, so that we can compare these signatures to incoming requests and detect statistical outliers. This way we can simply white-list types of traffic and perform a specific action on divergent requests. The anomaly detection method has a few benefits over the traditional categorical models. Namely that there is no need for a comprehensive data set of cyber attacks from which to learn but also that we can hopefully detect cyber attacks that do not yet exist, due to the white listing of benign traffic.
 
+To build our anomaly detection algorithm we require 3 things:
+- A data set containing enough benign HTTP request from which to learn
+- A sound feature extraction method that captures the requests signature
+- A neural network that is able to compress data into it's latent space representation and from that learn how to rebuild the data into it's original dimensional state
 
 ### Feature extraction
-Feature extraction is done as part of the [preprocessor](https://github.com/Mathuiss/cyber_wolf/blob/main/rel/class_preprocessor.py). 
+Feature extraction is done as part of the [preprocessor](https://github.com/Mathuiss/cyber_wolf/blob/main/rel/class_preprocessor.py). To be able to capture the essence of the data a rather simple technique is used. We will scan the request and find all user controled input. This means that we will parse all query parameters, header values and body values. These are all stored in a big list. Then the program will parse these requests and build a histogram for each value with the following specification:
+```python
+FEATUE_DEF = ["path", "header", "body", "length", "lowercase", "uppercase", "0", "1", "2", "3", "4", "5", "6", "7",
+            "8", "9", "[", "\\", "]", "^", "_", "`", "{", "|", "}", "~", "!", "\"", "#", "$", "%",
+            "&", "'", "(", ")", "*", "+", ",", "-", ".", "/", ":", ";", "<", ">", "=", "?", "@"]
+```
+We will hot-one encode the location in which the value was found. This can be either in the path, header or body of the request. Then we will assign the length of the value to the ```length``` field. In the ```lowercase``` and ```uppercase``` fields we will assign the amount of lower case and upper case alphabetical characters. 
+
+### Model building
+
+
+### Detection algorithm
