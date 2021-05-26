@@ -144,10 +144,10 @@ Now it's time to train the model. We train the model based on the result of the 
 model.fit(x_train, x_train, epochs=20, batch_size=64, validation_data=(x_test, x_test))
 ```
 After training the MSE should look something like this:
-![MSE training graph](https://raw.githubusercontent.com/Mathuiss/cyber_wolf/main/data/img/mse)
+![MSE training graph](https://raw.githubusercontent.com/Mathuiss/cyber_wolf/main/data/img/MSE.png)
 
 The cosine simislarity should look something like this:
-![Cosine Similarity training graph](https://raw.githubusercontent.com/Mathuiss/cyber_wolf/main/data/img/cs)
+![Cosine Similarity training graph](https://raw.githubusercontent.com/Mathuiss/cyber_wolf/main/data/img/CosineSimilarity.png)
 
 
 ### Detection algorithm
