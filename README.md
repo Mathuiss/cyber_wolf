@@ -79,3 +79,32 @@ Here is the list of features that are not yet implemented in this release:
 This was all the nessecary information in order for you to get started using Cyber WOLF. If you want to know more about the theory behind this software, please continue reading the next chapter.
 
 ## Under the hood of Cyber WOLF
+In this chapter we will look at the way our machine learning algorithm is implemented. Furthermore we will take a look at the way feature extraction is implemented and why. We will also look at the way the model is built and it's performance. Lastly we will take a look at the way the detection algorithm is implemented and why it works like that.
+
+### Machine learning
+Cyber attacks on web applications come in 2 categories: Context-dependent and context-independent cyber attacks. A context-dependent cyber attacks is an attack which is not visible in the data. For examle if a hacker performs a login action with a correct user name and password, we are unable to determine whether this is a cyber attack or not, by looking at the HTTP request alone. A context-independent cyber attack on the other hand is recognizable by looking at an HTTP request.
+```
+POST /EditPosition?handler=Buy HTTP/1.1
+Host: localhost:8000
+Connection: keep-alive
+Content-Length: 246
+Cache-Control: max-age=0
+Upgrade-Insecure-Requests: 1
+Origin: http://localhost:8000
+Content-Type: application/x-www-form-urlencoded
+User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.93 Safari/537.36
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9
+Sec-GPC: 1
+Sec-Fetch-Site: same-origin
+Sec-Fetch-Mode: navigate
+Sec-Fetch-User: ?1
+Sec-Fetch-Dest: document
+Accept-Encoding: gzip, deflate, br
+Accept-Language: en-US,en;q=0.9
+
+
+ClientId=%3CSCRIPT%20TYPE=%22TEXT/JAVASCRIPT%22%3EVAR%20ADR%20=%20%27../EVIL.PHP?CAKEMONSTER=%27%20+%20ESCAPE(DOCUMENT.COOKIE);%3C/SCRIPT%3E&Item=2&amount=20
+```
+By looking at the above HTTP request a human is easily able to spot the XSS payload in the request body. The goal is to build a machine learning model that is able to detect anomalies in these HTTP requests, and take certain actions based on the certainty of it being a cyber attack.
+### Feature extraction
+Feature extraction is done as part of the [preprocessor](https://github.com/Mathuiss/cyber_wolf/blob/main/rel/class_preprocessor.py). 
