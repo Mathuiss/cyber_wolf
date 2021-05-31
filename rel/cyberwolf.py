@@ -8,13 +8,13 @@ import config
 from tensorflow.keras.models import load_model
 
 # TCP server settings
-HOST = "0.0.0.0"
-PORT = 8000
-MAX_CONNECTIONS = 64
+host = config.read_value("host_address")
+port = int(config.read_value("host_port"))
+max_connections = int(config.read_value("max_connections"))
 
 # Remote server settings
-APP_IP = "127.0.0.1"
-APP_PORT = 8080
+remote_address = config.read_value("remote_address")
+rempote_port = int(config.read_value("remote_port"))
 
 # Cyberwolf settings
 class_preprocessor.load_ignorefile() # This command can be turned off
@@ -28,11 +28,11 @@ class TCPProxy:
     def __init__(self):
         self.soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         # Bind to address
-        self.soc.bind((HOST, PORT))
+        self.soc.bind((host, port))
         # Set socket as listener
-        self.soc.listen(MAX_CONNECTIONS)
+        self.soc.listen(max_connections)
 
-        print(f"Listening for incoming connections on {HOST}:{PORT}")
+        print(f"Listening for incoming connections on {host}:{port}")
 
     def close(self):
         self.soc.close()
@@ -64,7 +64,7 @@ class TCPProxy:
         # Open a connection to the proxy called ps
         with socket.socket() as ps:
             # Connect to the remote application
-            ps.connect((APP_IP, APP_PORT))
+            ps.connect((remote_address, rempote_port))
             # Send message to the remote application
             ps.sendall(bytes(msg, "utf-8"))
             print(f"Proxying message of size: {len(msg)}")
