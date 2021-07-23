@@ -71,7 +71,7 @@ One you see a message like ```Listening for incoming connections on 0.0.0.0:8000
 
 ## TODO:
 Here is the list of features that are not yet implemented in this release:
-- Automatic data gathering (saving the first n number of HTTP requests to train the model on).https://github.com/Mathuiss/cyber_wolf/blob/main/rel/class_training.py
+- Automatic data gathering (saving the first n number of HTTP requests to train the model on).
 - Audtomatic model building (automatically building an deploying a model based on the traffic it has saved during the gathering phase).
 - Flagging interface (allowing admins to easily allow or block values that have been flagged for review).
 - Multi-threaded connection handling
