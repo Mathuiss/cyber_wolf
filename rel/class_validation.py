@@ -87,9 +87,9 @@ def validate(model, values, features):
     mean = sum(list_mse) / len(list_mse)
     # Get the standard deviation of the list
     std_dev = np.std(list_mse)
-    # Get the flag threshold (mean + 1 * std dev)
+    # Get the flag threshold (mean + std dev)
     threshf = mean + std_dev
-    # Get the block threshold (mean + 2 * std dev)
+    # Get the block threshold (mean + std dev + epsilon * std dev)
     threshb = threshf + (epsilon * std_dev)
 
     # Show results
